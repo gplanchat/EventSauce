@@ -42,6 +42,7 @@ class YamlDefinitionLoader implements DefinitionLoader
             $definitionGroup->withNamespace($definition['namespace']);
         }
 
+        $this->loadRequires($definitionGroup, $definition['requires'] ?? []);
         $this->loadInterfaces($definitionGroup, $definition['interfaces'] ?? []);
         $this->loadTypeHandlers($definitionGroup, $definition['types'] ?? []);
         $this->loadFieldDefaults($definitionGroup, $definition['fields'] ?? []);
@@ -100,6 +101,13 @@ class YamlDefinitionLoader implements DefinitionLoader
             if (isset($default['deserializer'])) {
                 $definitionGroup->fieldDeserializer($field, $default['deserializer']);
             }
+        }
+    }
+
+    private function loadRequires(DefinitionGroup $definitionGroup, array $requires): void
+    {
+        foreach ($requires as $class => $alias) {
+            $definitionGroup->withRequire($class, $alias);
         }
     }
 

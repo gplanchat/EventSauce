@@ -72,6 +72,11 @@ final class DefinitionGroup
      */
     private $nullable = [];
 
+    /**
+     * @var array<class-string, class-string|null>
+     */
+    private $requires = [];
+
     public function __construct()
     {
         $this->typeSerializer(DateTimeImmutable::class, '{param}->format(\'Y-m-d H:i:s.uO\')');
@@ -86,6 +91,13 @@ final class DefinitionGroup
     public function withNamespace(string $namespace): DefinitionGroup
     {
         $this->namespace = $namespace;
+
+        return $this;
+    }
+
+    public function withRequire(string $require, string|null $alias = null): DefinitionGroup
+    {
+        $this->requires[] = [$require, $alias];
 
         return $this;
     }
@@ -198,6 +210,14 @@ final class DefinitionGroup
     public function namespace(): string
     {
         return $this->namespace;
+    }
+
+    /**
+     * @return list<array{0: class-string, 1: class-string}>
+     */
+    public function requires(): array
+    {
+        return $this->requires;
     }
 
     /**

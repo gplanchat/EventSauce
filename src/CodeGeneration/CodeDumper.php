@@ -34,10 +34,15 @@ class CodeDumper
         $commandCode = $this->dumpClasses($definitionGroup->commands(), $withHelpers, $withSerialization);
         $namespace = $definitionGroup->namespace();
         $allCode = implode("\n\n", array_filter([$definitionCode, $commandCode]));
+        $requires = implode("\n", array_map(function (array $item) {
+            [$class, $alias] = $item;
+            return $alias === null ? sprintf('use %s;', $class) : sprintf('use %s as %s;', $class, $alias);
+        }, $this->definitionGroup->requires()));
         if ($withSerialization) {
             $namespace .= ";
 
 use EventSauce\EventSourcing\Serialization\SerializablePayload";
+
         }
 
         return <<<EOF
@@ -46,6 +51,7 @@ use EventSauce\EventSourcing\Serialization\SerializablePayload";
 declare(strict_types=1);
 
 namespace $namespace;
+$requires
 
 $allCode
 
